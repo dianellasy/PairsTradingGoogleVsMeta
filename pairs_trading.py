@@ -32,14 +32,24 @@ print(google_dictionary)
 #merge data
 #check between data sets for the same date
 #we only compute the spread dates that are in both data sets/matching days
-#calc spread/range by finding difference
+#calc spread by finding difference
 spread_list = []
 
 for date in google_dictionary:
     if date in meta_dictionary:
         google_price = google_dictionary[date]
         meta_price = meta_dictionary[date]
-        spread = float(google_price) - float(meta_price)
+        spread = float(meta_price) - float(google_price)
         spread_list.append(spread)
-        
 print(spread_list)
+
+#calc range
+range = max(spread_list) - min(spread_list)
+print(range)
+
+#calc mean
+total = 0
+for x in spread_list:
+    total += x
+    mean = total / len(spread_list)
+print(mean)
