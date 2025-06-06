@@ -53,3 +53,22 @@ for x in spread_list:
     total += x
     mean = total / len(spread_list)
 print(mean)
+
+#calc standard deviation:
+#-get mean
+#-square differences from the mean
+#-get variance (mean of the squared differences minus 1 for length)
+#-square root the variance
+
+squared_diffs = [(x - mean) ** 2 for x in spread_list]
+
+squared_diffs_total = 0
+n = len(squared_diffs)
+
+for x in squared_diffs:
+    squared_diffs_total += x
+    variance = squared_diffs_total / (n - 1)
+    
+standard_dev = variance ** 0.5
+
+print(standard_dev)
