@@ -26,8 +26,6 @@ with open('meta_stocks.csv', newline='') as csvfile2:
         meta_dictionary_close = row[4]
         meta_dictionary[meta_dictionary_date] = meta_dictionary_close
 
-print(google_dictionary)
-
 
 #merge data
 #check between data sets for the same date
@@ -41,18 +39,17 @@ for date in google_dictionary:
         meta_price = meta_dictionary[date]
         spread = float(meta_price) - float(google_price)
         spread_list.append(spread)
-print(spread_list)
 
 #calc range
 range = max(spread_list) - min(spread_list)
-print(range)
+print("Range:", range)
 
 #calc mean
 total = 0
 for x in spread_list:
     total += x
     mean = total / len(spread_list)
-print(mean)
+print("Mean:", mean)
 
 #calc standard deviation:
 #-get mean
@@ -71,4 +68,5 @@ for x in squared_diffs:
     
 standard_dev = variance ** 0.5
 
-print(standard_dev)
+print("Standard Deviation:", standard_dev)
+print("Variance:", variance)
