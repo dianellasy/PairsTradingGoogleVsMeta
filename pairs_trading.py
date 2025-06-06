@@ -33,12 +33,24 @@ with open('meta_stocks.csv', newline='') as csvfile2:
 #calc spread by finding difference
 spread_list = []
 
+two_thousand_twenty_five = {}
+
+for key, value in google_dictionary.items():
+    date_in_parts = key.split('/')
+    year = date_in_parts[-1]
+    
+    if year == "2025":
+        two_thousand_twenty_five[key] = value
+
+
 for date in google_dictionary:
     if date in meta_dictionary:
         google_price = google_dictionary[date]
         meta_price = meta_dictionary[date]
         spread = float(meta_price) - float(google_price)
         spread_list.append(spread)
+
+
 
 #calc range
 range = max(spread_list) - min(spread_list)
