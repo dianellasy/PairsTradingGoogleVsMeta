@@ -27,3 +27,19 @@ with open('meta_stocks.csv', newline='') as csvfile2:
         meta_dictionary[meta_dictionary_date] = meta_dictionary_close
 
 print(google_dictionary)
+
+
+#merge data
+#check between data sets for the same date
+#we only compute the spread dates that are in both data sets/matching days
+#calc spread/range by finding difference
+spread_list = []
+
+for date in google_dictionary:
+    if date in meta_dictionary:
+        google_price = google_dictionary[date]
+        meta_price = meta_dictionary[date]
+        spread = float(google_price) - float(meta_price)
+        spread_list.append(spread)
+        
+print(spread_list)
