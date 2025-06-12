@@ -3,7 +3,7 @@ import csv
 google_dictionary = {}
 meta_dictionary = {}
 
-with open('google_stocks.csv', 'r') as csvfile1:
+with open('GOOGL stocks.csv', 'r') as csvfile1:
     google_stocks_reader = csv.reader(csvfile1)
 
     for index, row in enumerate(google_stocks_reader):
@@ -15,7 +15,7 @@ with open('google_stocks.csv', 'r') as csvfile1:
         google_dictionary[google_dictionary_date] = google_dictionary_close
 
 
-with open('meta_stocks.csv', newline='') as csvfile2:
+with open('META stocks.csv', newline='') as csvfile2:
     meta_stocks_reader = csv.reader(csvfile2)
 
     for index, row in enumerate(meta_stocks_reader):
@@ -33,14 +33,27 @@ with open('meta_stocks.csv', newline='') as csvfile2:
 #calc spread by finding difference
 spread_list = []
 
-two_thousand_twenty_five = {}
+google_grouped_by_year = {}
+meta_grouped_by_year = {}
 
-for key, value in google_dictionary.items():
-    date_in_parts = key.split('/')
-    year = date_in_parts[-1]
+
+for date, close in google_dictionary.items():
+    year = date.split('-')[0]
+
+    if year not in google_grouped_by_year:
+        google_grouped_by_year[year] = {}
     
-    if year == "2025":
-        two_thousand_twenty_five[key] = value
+    google_grouped_by_year[year][date] = close
+
+
+for date, close in meta_dictionary.items():
+    year = date.split('-')[0]
+
+    if year not in meta_grouped_by_year:
+        meta_grouped_by_year[year] = {}
+    
+    meta_grouped_by_year[year][date] = close
+
 
 
 for date in google_dictionary:
