@@ -31,11 +31,9 @@ with open('META stocks.csv', newline='') as csvfile2:
 #check between data sets for the same date
 #we only compute the spread dates that are in both data sets/matching days
 #calc spread by finding difference
-spread_list = []
 
 google_grouped_by_year = {}
 meta_grouped_by_year = {}
-
 
 for date, close in google_dictionary.items():
     year = date.split('-')[0]
@@ -53,9 +51,97 @@ for date, close in meta_dictionary.items():
         meta_grouped_by_year[year] = {}
     
     meta_grouped_by_year[year][date] = close
+    
+
+#calc the spread stats for each year
+#ex: we can call calculate_year_stats(2022) (any year) whenever we want
+def calculate_year_stats(year):
+    google_year_data = google_grouped_by_year.get(year, {})
+    meta_year_data = meta_grouped_by_year.get(year, {})
+    spread_list = []
+
+#only loop through the dates to get the specific year
+#before it didnt work since it looped through the dictionaries
+    for date in google_year_data:
+        if date in meta_year_data:
+            google_price = google_dictionary[date]
+            meta_price = meta_dictionary[date]
+            spread = float(meta_price) - float(google_price)
+            spread_list.append(spread)
+            
+    if not spread_list:
+        return None
+
+#calculations:
+
+#calc range
+    range = max(spread_list) - min(spread_list)
 
 
+#calc mean
+    total = 0
+    for x in spread_list:
+        total += x
+        mean = total / len(spread_list)
 
+
+#calc standard deviation:
+#-get mean
+#-square differences from the mean
+#-get variance (mean of the squared differences minus 1 for length)
+#-square root the variance
+    squared_diffs = [(x - mean) ** 2 for x in spread_list]
+
+    squared_diffs_total = 0
+    n = len(squared_diffs)
+
+    for x in squared_diffs:
+        squared_diffs_total += x
+        variance = squared_diffs_total / (n - 1)
+        
+    standard_dev = variance ** 0.5
+
+#access certain stats/store data from the dict later
+    return {
+        'trading_days': len(spread_list),
+        'range': range,
+        'mean': mean,
+        'variance': variance,
+        'standard_dev': standard_dev,
+        'min_spread': min(spread_list),
+        'max_spread': max(spread_list)
+    }
+
+#print results
+#make sure the years match across both data sets
+print("Yearly Stock Spread Analysis: \n")
+
+all_years = set(google_grouped_by_year.keys()) & set(meta_grouped_by_year.keys())
+
+for year in sorted(all_years):
+    print(f"Year {year}:")
+    print("-" * 30)
+    
+    stats = calculate_year_stats(year)
+    
+    if stats:
+        print(f"Trading Days: {stats['trading_days']}")
+        print(f"Range: ${stats['range']:.2f}")
+        print(f"Mean Spread: ${stats['mean']:.2f}")
+        print(f"Standard Deviation: ${stats['standard_dev']:.2f}")
+        print(f"Variance: ${stats['variance']:.2f}")
+        print(f"Min Spread: ${stats['min_spread']:.2f}")
+        print(f"Max Spread: ${stats['max_spread']:.2f}")
+    else:
+        print("No matching data for this year exists")
+    
+    print()
+
+#prints the overall stats/what we had before
+print("Stock Spread Across All Years:")
+print("-" * 40)
+
+spread_list = []
 for date in google_dictionary:
     if date in meta_dictionary:
         google_price = google_dictionary[date]
@@ -63,34 +149,14 @@ for date in google_dictionary:
         spread = float(meta_price) - float(google_price)
         spread_list.append(spread)
 
+range_val = max(spread_list) - min(spread_list)
+print("Range:", range_val)
 
-
-#calc range
-range = max(spread_list) - min(spread_list)
-print("Range:", range)
-
-#calc mean
-total = 0
-for x in spread_list:
-    total += x
-    mean = total / len(spread_list)
+mean = sum(spread_list) / len(spread_list)
 print("Mean:", mean)
 
-#calc standard deviation:
-#-get mean
-#-square differences from the mean
-#-get variance (mean of the squared differences minus 1 for length)
-#-square root the variance
-
 squared_diffs = [(x - mean) ** 2 for x in spread_list]
-
-squared_diffs_total = 0
-n = len(squared_diffs)
-
-for x in squared_diffs:
-    squared_diffs_total += x
-    variance = squared_diffs_total / (n - 1)
-    
+variance = sum(squared_diffs) / (len(squared_diffs) - 1)
 standard_dev = variance ** 0.5
 
 print("Standard Deviation:", standard_dev)
