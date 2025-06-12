@@ -51,7 +51,27 @@ for date, close in meta_dictionary.items():
         meta_grouped_by_year[year] = {}
     
     meta_grouped_by_year[year][date] = close
+
+
+def calculate_iqr(data):
+    sorted_data = sorted(data)
+    n = len(sorted_data)
+
+    def percentile(p):
+        pos = p * (n-1)
+        lower = int(pos)
+        upper = lower + 1
+
+        if upper >= n:
+            return sorted_data[lower]
+
+        fractional = pos - lower
+        return sorted_data[lower] * (1 - fractional) + sorted_data[upper] * fractional
     
+    quartile_one = percentile(0.25)
+    quartile_three = percentile(0.75)
+    return quartile_three - quartile_one
+
 
 #calc the spread stats for each year
 #ex: we can call calculate_year_stats(2022) (any year) whenever we want
@@ -101,6 +121,9 @@ def calculate_year_stats(year):
         
     standard_dev = variance ** 0.5
 
+#call calculate_iqr to get iqr
+    iqr = calculate_iqr(spread_list)
+
 #access certain stats/store data from the dict later
     return {
         'trading_days': len(spread_list),
@@ -109,7 +132,8 @@ def calculate_year_stats(year):
         'variance': variance,
         'standard_dev': standard_dev,
         'min_spread': min(spread_list),
-        'max_spread': max(spread_list)
+        'max_spread': max(spread_list),
+        'IQR': iqr
     }
 
 #print results
@@ -132,6 +156,7 @@ for year in sorted(all_years):
         print(f"Variance: ${stats['variance']:.2f}")
         print(f"Min Spread: ${stats['min_spread']:.2f}")
         print(f"Max Spread: ${stats['max_spread']:.2f}")
+        print(f"IQR: ${stats['IQR']:.2f}")
     else:
         print("No matching data for this year exists")
     
@@ -158,6 +183,8 @@ print("Mean:", mean)
 squared_diffs = [(x - mean) ** 2 for x in spread_list]
 variance = sum(squared_diffs) / (len(squared_diffs) - 1)
 standard_dev = variance ** 0.5
+iqr = calculate_iqr(spread_list)
 
 print("Standard Deviation:", standard_dev)
 print("Variance:", variance)
+print("IQR:", iqr)
