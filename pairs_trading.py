@@ -1,11 +1,15 @@
 import csv
 import math
 
+# Initialize dictionaries for storing closing price data for each stock
 google_dictionary = {}
 meta_dictionary = {}
 
-with open('GOOGL stocks.csv', 'r') as csvfile1:
-    google_stocks_reader = csv.reader(csvfile1)
+
+# Read Google and Meta stock data from CSV file
+# Each row (except the header) is parsed to extract the date (column 0) and closing price (column 4), which are then stored in a dictionary
+with open('GOOGL stocks.csv', 'r') as csv_file_one:
+    google_stocks_reader = csv.reader(csv_file_one)
 
     for index, row in enumerate(google_stocks_reader):
         if index == 0:
@@ -16,8 +20,8 @@ with open('GOOGL stocks.csv', 'r') as csvfile1:
         google_dictionary[google_dictionary_date] = google_dictionary_close
 
 
-with open('META stocks.csv', 'r') as csvfile2:
-    meta_stocks_reader = csv.reader(csvfile2)
+with open('META stocks.csv', 'r') as csv_file_two:
+    meta_stocks_reader = csv.reader(csv_file_two)
 
     for index, row in enumerate(meta_stocks_reader):
         if index == 0:
@@ -28,11 +32,8 @@ with open('META stocks.csv', 'r') as csvfile2:
         meta_dictionary[meta_dictionary_date] = meta_dictionary_close
 
 
-#merge data
-#check between data sets for the same date
-#we only compute the spread dates that are in both data sets/matching days
-#calc spread by finding difference
 
+# Merge data by grouping closing prices by year, which is done separately for Google and META
 google_grouped_by_year = {}
 meta_grouped_by_year = {}
 
@@ -54,12 +55,19 @@ for date, close in meta_dictionary.items():
     meta_grouped_by_year[year][date] = close
 
 
+
+# Define helper functions for statistical calculations
 def calculate_iqr(data):
+    """
+    Calculate the interquartile range of the input data
+    Sort the data and interpolates the 25th and 75th percentiles.
+    """
+    
     sorted_data = sorted(data)
     n = len(sorted_data)
 
     def percentile(p):
-        pos = p * (n-1)
+        pos = p * (n - 1)
         lower = int(pos)
         upper = lower + 1
 
@@ -74,7 +82,12 @@ def calculate_iqr(data):
     return quartile_three - quartile_one
 
 
+
 def calculate_correlation(data_x, data_y):
+    """
+    Calculate Pearson's correlation coefficient between two equally-sized datasets.
+    """
+
     n = len(data_x)
     mean_x = sum(data_x) / n
     mean_y = sum(data_y) / n
@@ -89,7 +102,12 @@ def calculate_correlation(data_x, data_y):
     return cov / (math.sqrt(var_x) * math.sqrt(var_y))
 
 
+
 def ols_regression(x, y):
+    """
+    Perform ordinary least squares (OLS) regression to estimate the relationship between x and y
+    Return the intercept (alpha) and slope (beta).
+    """
     n = len(x)
     mean_x = sum(x) / n
     mean_y = sum(y) / n
@@ -100,7 +118,17 @@ def ols_regression(x, y):
     return alpha, beta
 
 
+
 def compute_cointegration(x, y):
+    """
+    Conduct a simplified Engle-Granger cointegration test between two time series
+    1. Computes the residuals from the OLS regression of y on x
+    2. Computes the first differences of the residuals (de) and lags (e_lag)
+    3. Performs a regression of de on e_lag to estimate gamma
+    4. Computes the t-statistic for the estimated gamma
+
+    Return the t-statistic, gamma, and residual values.
+    """
     n = len(x)
 
     alpha, beta = ols_regression(x, y)
@@ -147,17 +175,28 @@ def compute_cointegration(x, y):
     return t_stat, gamma, residuals
 
 
-#calc the spread stats for each year
-#ex: we can call calculate_year_stats(2022) (any year) whenever we want
+
+# Calculate yearly statistics for stock spread between META and Google
+# The spread is defined as META closing price minus Google closing price for matching dates
+# Returns a dictionary of spread statistics
 def calculate_year_stats(year):
+    """
+    For a specific year, calculate:
+    - Spread metrics (range, mean, standard deviation, variance, IQR)
+    - Correlation between closing prices
+    - Cointegration test (t-statistic and gamma)
+
+    Only dates that are common to both stock datasets are analyzed.
+    """
+
     google_year_data = google_grouped_by_year.get(year, {})
     meta_year_data = meta_grouped_by_year.get(year, {})
+    
     spread_list = []
     google_prices = []
     meta_prices = []
 
-#only loop through the dates to get the specific year
-#before it didnt work since it looped through the dictionaries
+    # Only consider dates present in both datasets
     for date in google_year_data:
         if date in meta_year_data:
             g_price = float(google_dictionary[date])
@@ -170,24 +209,19 @@ def calculate_year_stats(year):
     if not spread_list:
         return None
 
-#calculations:
 
-#calc range
+    # Calculate range of spread
     range = max(spread_list) - min(spread_list)
 
 
-#calc mean
+    # Calculate mean spread
     total = 0
     for x in spread_list:
         total += x
         mean = total / len(spread_list)
 
 
-#calc standard deviation:
-#-get mean
-#-square differences from the mean
-#-get variance (mean of the squared differences minus 1 for length)
-#-square root the variance
+    # Calculate standard deviation and variance from the spread data
     squared_diffs = [(x - mean) ** 2 for x in spread_list]
 
     squared_diffs_total = 0
@@ -199,17 +233,19 @@ def calculate_year_stats(year):
         
     standard_dev = variance ** 0.5
 
-    #call calculate_iqr to get iqr
+
+    # Get IQR using the helper function
     iqr = calculate_iqr(spread_list)
 
-    #correlation between closing prices
+
+    # Calculate correlation between Google and META closing prices
     correlation = calculate_correlation(google_prices, meta_prices)
 
-    #cointegration test using the closing prices
+
+    # Compute cointegration using the Engle-Granger test
     t_stat, gamma, _ = compute_cointegration(google_prices, meta_prices)
 
 
-#access certain stats/store data from the dict later
     return {
         'trading_days': len(spread_list),
         'range': range,
@@ -225,6 +261,8 @@ def calculate_year_stats(year):
     }
 
 
+
+# Calculate overall correlation and cointegration for all matching dates
 overall_google_prices = []
 overall_meta_prices = []
 dates_common = sorted(set(google_dictionary.keys()) & set(meta_dictionary.keys()))
@@ -251,8 +289,9 @@ else:
     print("No matching data found for overall correlation and cointegration tests.")
 
 
-#print results
-#make sure the years match across both data sets
+
+# Print Yearly Stock Spread Analysis
+# For each common year between both datasets, print the stats
 print("\nYearly Stock Spread Analysis:\n")
 
 all_years = set(google_grouped_by_year.keys()) & set(meta_grouped_by_year.keys())
@@ -282,7 +321,10 @@ for year in sorted(all_years):
     
     print()
 
-#prints the overall stats/what we had before
+
+
+# Print overall stock spread statistics across all years
+# Aggregates the spread between META and Google over all matching dates
 print("Stock Spread Across All Years:")
 print("-" * 40)
 
