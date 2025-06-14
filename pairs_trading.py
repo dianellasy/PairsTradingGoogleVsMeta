@@ -362,28 +362,28 @@ def calculate_year_statistics(year):
 # Calculate overall correlation and cointegration for all matching dates
 overall_google_prices = []
 overall_meta_prices = []
-dates_common = sorted(set(google_closing_prices.keys()) & set(meta_closing_prices.keys()))
+common_dates = sorted(set(google_closing_prices.keys()) & set(meta_closing_prices.keys()))
 
-for date in dates_common:
+for date in common_dates:
     overall_google_prices.append(float(google_closing_prices[date]))
     overall_meta_prices.append(float(meta_closing_prices[date]))
 
 if overall_google_prices:
-    overall_corr = calculate_pearson_correlation(overall_google_prices, overall_meta_prices)
-    print("Overall Pearson Correlation between Google and META closing prices: {:.4f}".format(overall_corr))
+    overall_correlation = calculate_pearson_correlation(overall_google_prices, overall_meta_prices)
+    print("Overall Pearson Correlation between Google and META Closing Prices: {:.4f}".format(overall_correlation))
 
-    coint_t_stat, coint_gamma, _ = compute_cointegration(overall_google_prices, overall_meta_prices)
-    print("\nManual Engle-Granger Cointegration Test (Simplified):")
-    print("   t-statistic (for gamma): {:.4f}".format(coint_t_stat))
-    print("   gamma: {:.4f}".format(coint_gamma))
+    overall_t_statistic, overall_gamma, _ = compute_cointegration(overall_google_prices, overall_meta_prices)
+    print("\nEngle-Granger Cointegration Test:")
+    print("• t-statistic (for gamma): {:.4f}".format(overall_t_statistic))
+    print("• gamma: {:.4f}".format(overall_gamma))
 
-    if coint_t_stat is not None:
-        if coint_t_stat <= -3.45:
-            print("   -> Evidence suggests the series are cointegrated.")
+    if overall_t_statistic is not None:
+        if overall_t_statistic <= -3.45:
+            print("\nEvidence suggests the series are cointegrated.")
         else:
-            print("   -> Evidence suggests the series are not cointegrated (at 5% level, roughly).")
+            print("\nEvidence suggests the series are not cointegrated (at 5% level, roughly).")
 else:
-    print("No matching data found for overall correlation and cointegration tests.")
+    print("\nNo matching data found for overall correlation and cointegration tests.")
 
 
 
