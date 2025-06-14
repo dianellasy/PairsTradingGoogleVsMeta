@@ -1,0 +1,190 @@
+-----------------------------------------------------------------------------
+Overall Pearson Correlation between Google and META Closing Prices: 0.9395
+
+Engle-Granger Cointegration Test:
+• t-statistic (for gamma): -0.1169
+• gamma: -0.0002
+
+Evidence suggests the series are not cointegrated (at 5% level, roughly).
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+Yearly Stock Spread Analysis:
+
+☆ Year 2012:
+---------------------------------------
+Trading Days: 155
+Range: $114.73
+Mean Spread: $-305.19
+Standard Deviation: $33.11
+Variance: $1096.47
+Min Spread: $-363.30
+Max Spread: $-248.57
+IQR: $57.27
+Correlation (Closing Prices): -0.6596
+Cointegration Test:
+• t-statistic: -3.0672
+• gamma: -0.0788
+
+☆ Year 2013:
+---------------------------------------
+Trading Days: 252
+Range: $185.21
+Mean Spread: $-407.08
+Standard Deviation: $42.57
+Variance: $1812.00
+Min Spread: $-506.27
+Max Spread: $-321.06
+IQR: $48.05
+Correlation (Closing Prices): 0.7073
+Cointegration Test:
+• t-statistic: -1.3644
+• gamma: -0.0140
+
+☆ Year 2014:
+---------------------------------------
+Trading Days: 252
+Range: $117.97
+Mean Spread: $-499.36
+Standard Deviation: $25.45
+Variance: $647.53
+Min Spread: $-541.44
+Max Spread: $-423.47
+IQR: $39.32
+Correlation (Closing Prices): 0.1217
+Cointegration Test:
+• t-statistic: -1.6383
+• gamma: -0.0182
+
+☆ Year 2015:
+---------------------------------------
+Trading Days: 252
+Range: $266.36
+Mean Spread: $-531.22
+Standard Deviation: $77.37
+Variance: $5986.46
+Min Spread: $-686.70
+Max Spread: $-420.34
+IQR: $123.03
+Correlation (Closing Prices): 0.9660
+Cointegration Test:
+• t-statistic: -3.7041
+• gamma: -0.1052
+
+☆ Year 2016:
+---------------------------------------
+Trading Days: 252
+Range: $130.29
+Mean Spread: $-646.18
+Standard Deviation: $31.72
+Variance: $1006.46
+Min Spread: $-702.46
+Max Spread: $-572.17
+IQR: $55.51
+Correlation (Closing Prices): 0.7085
+Cointegration Test:
+• t-statistic: -2.4528
+• gamma: -0.0371
+
+☆ Year 2017:
+---------------------------------------
+Trading Days: 251
+Range: $222.26
+Mean Spread: $-783.20
+Standard Deviation: $60.55
+Variance: $3666.31
+Min Spread: $-904.27
+Max Spread: $-682.01
+IQR: $113.65
+Correlation (Closing Prices): 0.8841
+Cointegration Test:
+• t-statistic: -1.7818
+• gamma: -0.0189
+
+☆ Year 2018:
+---------------------------------------
+Trading Days: 251
+Range: $273.11
+Mean Spread: $-950.53
+Standard Deviation: $61.66
+Variance: $3801.36
+Min Spread: $-1109.24
+Max Spread: $-836.13
+IQR: $85.72
+Correlation (Closing Prices): 0.5181
+Cointegration Test:
+• t-statistic: -1.3849
+• gamma: -0.0185
+
+☆ Year 2019:
+---------------------------------------
+Trading Days: 252
+Range: $288.19
+Mean Spread: $-1009.58
+Standard Deviation: $70.66
+Variance: $4992.98
+Min Spread: $-1162.78
+Max Spread: $-874.59
+IQR: $105.01
+Correlation (Closing Prices): 0.6368
+Cointegration Test:
+• t-statistic: -2.4514
+• gamma: -0.0318
+
+☆ Year 2020:
+---------------------------------------
+Trading Days: 253
+Range: $638.03
+Mean Spread: $-1244.44
+Standard Deviation: $141.18
+Variance: $19932.72
+Min Spread: $-1544.06
+Max Spread: $-906.03
+IQR: $128.85
+Correlation (Closing Prices): 0.9057
+Cointegration Test:
+• t-statistic: -2.1439
+• gamma: -0.0377
+
+☆ Year 2021:
+---------------------------------------
+Trading Days: 252
+Range: $1200.89
+Mean Spread: $-2163.33
+Standard Deviation: $338.17
+Variance: $114357.35
+Min Spread: $-2658.08
+Max Spread: $-1457.19
+IQR: $589.01
+Correlation (Closing Prices): 0.8327
+Cointegration Test:
+• t-statistic: -1.9213
+• gamma: -0.0304
+
+☆ Year 2022:
+---------------------------------------
+Trading Days: 57
+Range: $398.45
+Mean Spread: $-2454.79
+Standard Deviation: $92.87
+Variance: $8625.27
+Min Spread: $-2637.00
+Max Spread: $-2238.55
+IQR: $116.35
+Correlation (Closing Prices): 0.4038
+Cointegration Test:
+• t-statistic: -0.7464
+• gamma: -0.0256
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+☆ Stock Spread Across All Years:
+-------------------------------------
+Range: 2409.5093729318846
+Mean: -912.4392985398996
+Variance: 332365.66641300655
+Standard Deviation: 576.5116359736433
+IQR: 559.4050325939942
+-----------------------------------------------------------------------------
