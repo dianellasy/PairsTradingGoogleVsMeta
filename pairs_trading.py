@@ -94,7 +94,7 @@ def calculate_iqr(data):
 
 
 def calculate_pearson_correlation(series_x, series_y):
-    """ Calculate Pearson's correlation coefficient between two equally-sized datasets. """
+    """ Calculates Pearson's correlation coefficient between two equally-sized datasets. """
 
     n = len(series_x)
     mean_x = sum(series_x) / n
@@ -137,7 +137,7 @@ def calculate_pearson_correlation(series_x, series_y):
 
 def ols_regression(x, y):
     """
-    Perform ordinary least squares (OLS) regression to estimate the relationship between x and y
+    Performs ordinary least squares (OLS) regression to estimate the relationship between x and y
     Returns the intercept (alpha) and slope (beta).
     """
 
@@ -172,60 +172,98 @@ def ols_regression(x, y):
 
 
 
-def compute_cointegration(x, y):
+def compute_cointegration(series_x, series_y):
     """
-    Conduct a simplified Engle-Granger cointegration test between two time series
+    Conducts a simplified Engle-Granger cointegration test between two time series
     1. Computes the residuals from the OLS regression of y on x
-    2. Computes the first differences of the residuals (de) and lags (e_lag)
-    3. Performs a regression of de on e_lag to estimate gamma
+    2. Computes the first differences of the residuals (residuals_first_difference) and lags (lagged_residuals)
+    3. Performs a regression of residuals_first_difference on lagged_residuals to estimate gamma
     4. Computes the t-statistic for the estimated gamma
 
     Return the t-statistic, gamma, and residual values.
     """
-    n = len(x)
 
-    alpha, beta = ols_regression(x, y)
-    residuals = [yi - (alpha + beta * xi) for xi, yi in zip(x, y)]
+    # Long-run regression: y = α + βx
+    n = len(series_x)
+    alpha, beta = ols_regression(series_x, series_y)
 
+
+    # Compute residuals: e_t = y_t − (α + βx_t)
+    residuals = []
+
+    for x_value, y_value in zip(series_x, series_y):
+        residual = y_value - (alpha + beta * x_value)
+        residuals.append(residual)
+
+    # If there are not enough observations, return early
     if n < 2: 
         return None, None, residuals
     
-    de = []
-    e_lag = []
+
+    # Build ADF(1) design: Δe_t and e_{t-1}
+    # ADF(1) means one lag of the level term and no extra lagged differences (p = 1)
+    residuals_first_difference = [] # Δe_t
+    lagged_residuals = []   # e_{t-1}
 
     for i in range(1, n):
-        de.append(residuals[i] - residuals[i - 1])
-        e_lag.append(residuals[i - 1])
+        difference_residual = residuals[i] - residuals[i - 1]
+        lagged_residual = residuals[i - 1]
+        residuals_first_difference.append(difference_residual)
+        lagged_residuals.append(lagged_residual)
     
-    m_e = sum(e_lag) / len(e_lag)
-    m_de = sum(de) / len(de)
 
-    num = sum((e - m_e) * (d - m_de) for e, d in zip(e_lag, de))
-    den = sum((e - m_e) ** 2 for e in e_lag)
+    # Estimate γ in Δe_t = γ e_{t-1} + ε_t
+    # a. Means
+    sum_lagged = 0.0
 
-    if den == 0:
-        gamma = 0
-
-    else:
-        gamma = num / den
-
-    reg_errors = [d - gamma * e for d, e in zip(de, e_lag)]
-    sse = sum(err ** 2 for err in reg_errors)
-
-    df = len(e_lag) - 1
-
-    if df <= 0:
-        stderr = float('inf')
-    else:
-        variance_err = sse / df
-        stderr = math.sqrt(variance_err) / math.sqrt(den) if den != 0 else float('inf')
+    for lag in lagged_residuals:
+        sum_lagged += lag
     
-    if stderr == 0:
-        t_stat = float('inf')
-    else:
-        t_stat = gamma / stderr
+    mean_lag = sum_lagged / len(lagged_residuals)
+
+
+    sum_first_difference = 0.00
+
+    for difference in residuals_first_difference:
+        sum_first_difference += difference
     
-    return t_stat, gamma, residuals
+    mean_difference = sum_first_difference / len(residuals_first_difference)
+
+    # b. Covariance numerator and variance denominator
+    covariance_numerator = 0.0
+    variance_denominator = 0.0
+
+    for lag, first_difference in zip(lagged_residuals, residuals_first_difference):
+        covariance_numerator += (lag - mean_lag) * (first_difference - mean_difference)
+        variance_denominator += (lag - mean_lag) ** 2
+    
+    gamma = covariance_numerator / variance_denominator if variance_denominator != 0 else 0.0
+
+
+    # Regression residuals ε_t and their variance
+    regression_errors = []
+    
+    for lag, first_difference in zip(lagged_residuals, residuals_first_difference):
+        regression_errors.append(first_difference - gamma * lag)
+
+    sse = 0.0   # Σ ε_t²
+
+    for error in regression_errors:
+        sse += error ** 2
+
+    degrees_of_freedom = len(lagged_residuals) - 1
+
+    if degrees_of_freedom <= 0 or variance_denominator == 0:
+        standard_error_of_gamma = float('inf')
+    else:
+        variance_error = sse / degrees_of_freedom
+        standard_error_of_gamma = math.sqrt(variance_error) / math.sqrt(variance_denominator)
+
+
+    # t-statistic for γ
+    t_statistic = gamma / standard_error_of_gamma if standard_error_of_gamma != 0 else float('inf')
+    
+    return t_statistic, gamma, residuals
 
 
 
