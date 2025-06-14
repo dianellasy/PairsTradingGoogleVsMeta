@@ -270,7 +270,7 @@ def compute_cointegration(series_x, series_y):
 # Calculate yearly statistics for stock spread between META and Google
 # The spread is defined as META closing price minus Google closing price for matching dates
 # Returns a dictionary of spread statistics
-def calculate_year_stats(year):
+def calculate_year_statistics(year):
     """
     For a specific year, calculate:
     - Spread metrics (range, mean, standard deviation, variance, IQR)
@@ -283,71 +283,77 @@ def calculate_year_stats(year):
     google_year_data = google_prices_by_year.get(year, {})
     meta_year_data = meta_prices_by_year.get(year, {})
     
-    spread_list = []
+    spread_values = []
     google_prices = []
     meta_prices = []
 
-    # Only consider dates present in both datasets
+
+    # Consider only dates that exist in both Google ansd META data for that year
     for date in google_year_data:
         if date in meta_year_data:
-            g_price = float(google_closing_prices[date])
-            m_price = float(meta_closing_prices[date])
-            spread = m_price - g_price
-            spread_list.append(spread)
-            google_prices.append(g_price)
-            meta_prices.append(m_price)
+            google_price = float(google_closing_prices[date])
+            meta_price = float(meta_closing_prices[date])
+            spread = meta_price - google_price
+            spread_values.append(spread)
+            google_prices.append(google_price)
+            meta_prices.append(meta_price)
             
-    if not spread_list:
+    if not spread_values:
         return None
 
 
     # Calculate range of spread
-    range = max(spread_list) - min(spread_list)
+    range = max(spread_values) - min(spread_values)
 
 
     # Calculate mean spread
     total = 0
-    for x in spread_list:
+
+    for x in spread_values:
         total += x
-        mean = total / len(spread_list)
+        mean = total / len(spread_values)
 
 
-    # Calculate standard deviation and variance from the spread data
-    squared_diffs = [(x - mean) ** 2 for x in spread_list]
+    # Calculate standard deviation and variance 
+    squared_differences = []
 
-    squared_diffs_total = 0
-    n = len(squared_diffs)
+    for value in spread_values:
+        squared_difference = (value - mean) ** 2
+        squared_differences.append(squared_difference)
 
-    for x in squared_diffs:
-        squared_diffs_total += x
-        variance = squared_diffs_total / (n - 1)
+    squared_differences_total = 0
+    n = len(squared_differences)
+
+    for squared_difference in squared_differences:
+        squared_differences_total += squared_difference
+        variance = squared_differences_total / (n - 1)
         
-    standard_dev = variance ** 0.5
+    standard_deviation = variance ** 0.5
 
 
-    # Get IQR using the helper function
-    iqr = calculate_iqr(spread_list)
+    # Calculate IQR
+    iqr = calculate_iqr(spread_values)
 
 
     # Calculate correlation between Google and META closing prices
-    correlation = calculate_pearson_correlation(google_prices, meta_prices)
+    closing_price_correlation = calculate_pearson_correlation(google_prices, meta_prices)
 
 
     # Compute cointegration using the Engle-Granger test
-    t_stat, gamma, _ = compute_cointegration(google_prices, meta_prices)
+    t_statistic, gamma, _ = compute_cointegration(google_prices, meta_prices)
 
 
     return {
-        'trading_days': len(spread_list),
+        'trading_days': len(spread_values),
         'range': range,
         'mean': mean,
         'variance': variance,
-        'standard_dev': standard_dev,
-        'min_spread': min(spread_list),
-        'max_spread': max(spread_list),
+        'standard_deviation': standard_deviation,
+        'min_spread': min(spread_values),
+        'max_spread': max(spread_values),
         'IQR': iqr,
-        'correlation': correlation,
-        'cointegration_t_stat': t_stat,
+        'correlation': closing_price_correlation,
+        'cointegration_t_statistic': t_statistic,
         'cointegration_gamma': gamma
     }
 
@@ -391,20 +397,20 @@ for year in sorted(all_years):
     print(f"Year {year}:")
     print("-" * 30)
     
-    stats = calculate_year_stats(year)
+    stats = calculate_year_statistics(year)
     
     if stats:
         print(f"Trading Days: {stats['trading_days']}")
         print(f"Range: ${stats['range']:.2f}")
         print(f"Mean Spread: ${stats['mean']:.2f}")
-        print(f"Standard Deviation: ${stats['standard_dev']:.2f}")
+        print(f"Standard Deviation: ${stats['standard_deviation']:.2f}")
         print(f"Variance: ${stats['variance']:.2f}")
         print(f"Min Spread: ${stats['min_spread']:.2f}")
         print(f"Max Spread: ${stats['max_spread']:.2f}")
         print(f"IQR: ${stats['IQR']:.2f}")
         print(f"Correlation (Closing Prices): {stats['correlation']:.4f}")
         print("Cointegration Test:")
-        print("   t-statistic: {:.4f}".format(stats['cointegration_t_stat']))
+        print("   t-statistic: {:.4f}".format(stats['cointegration_t_statistic']))
         print("   gamma: {:.4f}".format(stats['cointegration_gamma']))
 
     else:
@@ -419,26 +425,26 @@ for year in sorted(all_years):
 print("Stock Spread Across All Years:")
 print("-" * 40)
 
-spread_list = []
+spread_values = []
 for date in google_closing_prices:
     if date in meta_closing_prices:
         google_price = google_closing_prices[date]
         meta_price = meta_closing_prices[date]
         spread = float(meta_price) - float(google_price)
-        spread_list.append(spread)
+        spread_values.append(spread)
 
-if spread_list:
-    range_val = max(spread_list) - min(spread_list)
+if spread_values:
+    range_val = max(spread_values) - min(spread_values)
     print("Range:", range_val)
 
-    mean = sum(spread_list) / len(spread_list)
+    mean = sum(spread_values) / len(spread_values)
     print("Mean:", mean)
 
-    squared_diffs = [(x - mean) ** 2 for x in spread_list]
-    variance = sum(squared_diffs) / (len(squared_diffs) - 1)
-    standard_dev = variance ** 0.5
-    iqr = calculate_iqr(spread_list)
+    squared_differences = [(x - mean) ** 2 for x in spread_values]
+    variance = sum(squared_differences) / (len(squared_differences) - 1)
+    standard_deviation = variance ** 0.5
+    iqr = calculate_iqr(spread_values)
 
-    print("Standard Deviation:", standard_dev)
+    print("Standard Deviation:", standard_deviation)
     print("Variance:", variance)
     print("IQR:", iqr)
