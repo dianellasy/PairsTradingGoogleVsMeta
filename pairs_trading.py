@@ -138,15 +138,36 @@ def calculate_pearson_correlation(series_x, series_y):
 def ols_regression(x, y):
     """
     Perform ordinary least squares (OLS) regression to estimate the relationship between x and y
-    Return the intercept (alpha) and slope (beta).
+    Returns the intercept (alpha) and slope (beta).
     """
+
     n = len(x)
     mean_x = sum(x) / n
     mean_y = sum(y) / n
-    numerator = sum((xi - mean_x) * (yi - mean_y) for xi, yi in zip(x, y))
-    denominator = sum((xi - mean_x) ** 2 for xi in x)
+
+
+    # Calculate the numerator for beta, which is the sum of (xi - mean_x) * (yi - mean_y) for all data points
+    numerator = 0
+
+    for xi, yi in zip(x, y):
+        numerator += (xi - mean_x) * (yi - mean_y)
+
+
+    # Calculate the denominator for beta, which is the sum of squared differences (xi - mean_x)^2 for all x values
+    denominator = 0
+
+    for xi in x:
+        denominator += (xi - mean_x) ** 2
+
+
+    # Calculate beta (slope)
+    # If the denominator is zero, set beta to 0 to avoid division by zero
     beta = numerator / denominator if denominator != 0 else 0
+
+
+    # Calculate alpha (intercept) using the means of x and y
     alpha = mean_y - beta * mean_x
+
     return alpha, beta
 
 
