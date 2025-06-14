@@ -387,32 +387,29 @@ else:
 
 
 
-# Print Yearly Stock Spread Analysis
-# For each common year between both datasets, print the stats
+# Print yearly stock spread analysis for each common year
 print("\nYearly Stock Spread Analysis:\n")
+common_years = set(google_prices_by_year.keys()) & set(meta_prices_by_year.keys())
 
-all_years = set(google_prices_by_year.keys()) & set(meta_prices_by_year.keys())
-
-for year in sorted(all_years):
+for year in sorted(common_years):
     print(f"Year {year}:")
     print("-" * 30)
     
-    stats = calculate_year_statistics(year)
+    statistics = calculate_year_statistics(year)
     
-    if stats:
-        print(f"Trading Days: {stats['trading_days']}")
-        print(f"Range: ${stats['range']:.2f}")
-        print(f"Mean Spread: ${stats['mean']:.2f}")
-        print(f"Standard Deviation: ${stats['standard_deviation']:.2f}")
-        print(f"Variance: ${stats['variance']:.2f}")
-        print(f"Min Spread: ${stats['min_spread']:.2f}")
-        print(f"Max Spread: ${stats['max_spread']:.2f}")
-        print(f"IQR: ${stats['IQR']:.2f}")
-        print(f"Correlation (Closing Prices): {stats['correlation']:.4f}")
+    if statistics:
+        print(f"Trading Days: {statistics['trading_days']}")
+        print(f"Range: ${statistics['range']:.2f}")
+        print(f"Mean Spread: ${statistics['mean']:.2f}")
+        print(f"Standard Deviation: ${statistics['standard_deviation']:.2f}")
+        print(f"Variance: ${statistics['variance']:.2f}")
+        print(f"Min Spread: ${statistics['min_spread']:.2f}")
+        print(f"Max Spread: ${statistics['max_spread']:.2f}")
+        print(f"IQR: ${statistics['IQR']:.2f}")
+        print(f"Correlation (Closing Prices): {statistics['correlation']:.4f}")
         print("Cointegration Test:")
-        print("   t-statistic: {:.4f}".format(stats['cointegration_t_statistic']))
-        print("   gamma: {:.4f}".format(stats['cointegration_gamma']))
-
+        print("• t-statistic: {:.4f}".format(statistics['cointegration_t_statistic']))
+        print("• gamma: {:.4f}".format(statistics['cointegration_gamma']))
     else:
         print("No matching data for this year exists")
     
@@ -421,30 +418,36 @@ for year in sorted(all_years):
 
 
 # Print overall stock spread statistics across all years
-# Aggregates the spread between META and Google over all matching dates
+# Aggregates the spread differences between META and Google over all matching dates
 print("Stock Spread Across All Years:")
 print("-" * 40)
 
-spread_values = []
+all_spreads = []
+
 for date in google_closing_prices:
     if date in meta_closing_prices:
         google_price = google_closing_prices[date]
         meta_price = meta_closing_prices[date]
         spread = float(meta_price) - float(google_price)
-        spread_values.append(spread)
+        all_spreads.append(spread)
 
-if spread_values:
-    range_val = max(spread_values) - min(spread_values)
-    print("Range:", range_val)
+if all_spreads:
+    all_spreads_range = max(all_spreads) - min(all_spreads)
+    print("Range:", all_spreads_range)
 
-    mean = sum(spread_values) / len(spread_values)
-    print("Mean:", mean)
+    all_spreads_mean = sum(all_spreads) / len(all_spreads)
+    print("Mean:", all_spreads_mean)
 
-    squared_differences = [(x - mean) ** 2 for x in spread_values]
-    variance = sum(squared_differences) / (len(squared_differences) - 1)
-    standard_deviation = variance ** 0.5
-    iqr = calculate_iqr(spread_values)
-
-    print("Standard Deviation:", standard_deviation)
-    print("Variance:", variance)
-    print("IQR:", iqr)
+    all_spreads_squared_differences = []
+    for x in all_spreads:
+        squared_difference = (x - all_spreads_mean) ** 2
+        all_spreads_squared_differences.append(squared_difference)
+ 
+    all_spreads_variance = sum(all_spreads_squared_differences) / (len(all_spreads_squared_differences) - 1)
+    print("Variance:", all_spreads_variance)
+    
+    all_spreads_standard_deviation = all_spreads_variance ** 0.5
+    print("Standard Deviation:", all_spreads_standard_deviation)
+    
+    overall_iqr = calculate_iqr(all_spreads)
+    print("IQR:", overall_iqr)
