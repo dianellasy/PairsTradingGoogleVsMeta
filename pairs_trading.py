@@ -1,5 +1,4 @@
 import csv
-import math
 
 # Initialize dictionaries for storing closing price data for each stock
 google_closing_prices = {}
@@ -131,7 +130,7 @@ def calculate_pearson_correlation(series_x, series_y):
     if variance_x == 0 or variance_y == 0:
         return 0
     
-    return covariance / (math.sqrt(variance_x) * math.sqrt(variance_y))
+    return covariance / (variance_x ** 0.5) * (variance_y ** 0.5)
 
 
 
@@ -257,7 +256,7 @@ def compute_cointegration(series_x, series_y):
         standard_error_of_gamma = float('inf')
     else:
         variance_error = sse / degrees_of_freedom
-        standard_error_of_gamma = math.sqrt(variance_error) / math.sqrt(variance_denominator)
+        standard_error_of_gamma = (variance_error ** 0.5) / (variance_denominator ** 0.5)
 
 
     # t-statistic for γ
@@ -435,19 +434,29 @@ if all_spreads:
     all_spreads_range = max(all_spreads) - min(all_spreads)
     print("Range:", all_spreads_range)
 
-    all_spreads_mean = sum(all_spreads) / len(all_spreads)
+    all_spreads_total = 0
+
+    for x in all_spreads:
+        all_spreads_total += x
+        all_spreads_mean = all_spreads_total / len(all_spreads)
+
     print("Mean:", all_spreads_mean)
 
+
     all_spreads_squared_differences = []
+
     for x in all_spreads:
         squared_difference = (x - all_spreads_mean) ** 2
         all_spreads_squared_differences.append(squared_difference)
  
+
     all_spreads_variance = sum(all_spreads_squared_differences) / (len(all_spreads_squared_differences) - 1)
     print("Variance:", all_spreads_variance)
     
+
     all_spreads_standard_deviation = all_spreads_variance ** 0.5
     print("Standard Deviation:", all_spreads_standard_deviation)
     
+
     overall_iqr = calculate_iqr(all_spreads)
     print("IQR:", overall_iqr)
