@@ -108,6 +108,7 @@ def calculate_pearson_correlation(series_x, series_y):
     
     covariance = covariance_sum / (n - 1)
 
+
     # Calculate variance for series_x
     variance_x_sum = 0
 
@@ -420,6 +421,8 @@ for index, year in enumerate(sorted(common_years)):
         print()
     
 print("-----------------------------------------------------------------------------")
+
+
 
 # Print overall stock spread statistics across all years
 # Aggregates the spread differences between META and Google over all matching dates
