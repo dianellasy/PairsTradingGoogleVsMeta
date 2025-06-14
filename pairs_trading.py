@@ -369,6 +369,7 @@ for date in common_dates:
 
 if overall_google_prices:
     overall_correlation = calculate_pearson_correlation(overall_google_prices, overall_meta_prices)
+    print("-----------------------------------------------------------------------------")
     print("Overall Pearson Correlation between Google and META Closing Prices: {:.4f}".format(overall_correlation))
 
     overall_t_statistic, overall_gamma, _ = compute_cointegration(overall_google_prices, overall_meta_prices)
@@ -384,15 +385,18 @@ if overall_google_prices:
 else:
     print("\nNo matching data found for overall correlation and cointegration tests.")
 
+print("-----------------------------------------------------------------------------")
+print("\n\n-----------------------------------------------------------------------------")
+
 
 
 # Print yearly stock spread analysis for each common year
-print("\nYearly Stock Spread Analysis:\n")
+print("Yearly Stock Spread Analysis:\n")
 common_years = set(google_prices_by_year.keys()) & set(meta_prices_by_year.keys())
 
-for year in sorted(common_years):
-    print(f"Year {year}:")
-    print("-" * 30)
+for index, year in enumerate(sorted(common_years)):
+    print(f"☆ Year {year}:")
+    print("---------------------------------------")
     
     statistics = calculate_year_statistics(year)
     
@@ -412,14 +416,16 @@ for year in sorted(common_years):
     else:
         print("No matching data for this year exists")
     
-    print()
-
-
+    if index < len(common_years) - 1:
+        print()
+    
+print("-----------------------------------------------------------------------------")
 
 # Print overall stock spread statistics across all years
 # Aggregates the spread differences between META and Google over all matching dates
-print("Stock Spread Across All Years:")
-print("-" * 40)
+print("\n\n-----------------------------------------------------------------------------")
+print("☆ Stock Spread Across All Years:")
+print("-------------------------------------")
 
 all_spreads = []
 
@@ -460,3 +466,5 @@ if all_spreads:
 
     overall_iqr = calculate_iqr(all_spreads)
     print("IQR:", overall_iqr)
+
+print("-----------------------------------------------------------------------------")
