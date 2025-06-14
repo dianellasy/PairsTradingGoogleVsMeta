@@ -130,7 +130,7 @@ def calculate_pearson_correlation(series_x, series_y):
     if variance_x == 0 or variance_y == 0:
         return 0
     
-    return covariance / (variance_x ** 0.5) * (variance_y ** 0.5)
+    return covariance / ((variance_x ** 0.5) * (variance_y ** 0.5))
 
 
 
