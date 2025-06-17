@@ -293,7 +293,7 @@ def calculate_year_statistics(year):
         if date in meta_year_data:
             google_price = float(google_closing_prices[date])
             meta_price = float(meta_closing_prices[date])
-            spread = meta_price - google_price
+            spread = abs(meta_price - google_price)
             spread_values.append(spread)
             google_prices.append(google_price)
             meta_prices.append(meta_price)
@@ -436,7 +436,7 @@ for date in google_closing_prices:
     if date in meta_closing_prices:
         google_price = google_closing_prices[date]
         meta_price = meta_closing_prices[date]
-        spread = float(meta_price) - float(google_price)
+        spread = abs(float(meta_price) - float(google_price))
         all_spreads.append(spread)
 
 if all_spreads:
