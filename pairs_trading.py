@@ -302,8 +302,12 @@ def calculate_year_statistics(year):
         return None
 
 
+    # Explicitly find min and max spread values before calculating the range
+    min_spread = min(spread_values)
+    max_spread = max(spread_values)
+
     # Calculate range of spread
-    range = max(spread_values) - min(spread_values)
+    range = max_spread - min_spread
 
 
     # Calculate mean spread
