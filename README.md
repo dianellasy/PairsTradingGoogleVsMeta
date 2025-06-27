@@ -13,5 +13,5 @@ This research project aims to:
 * Understand long-run equilibrium behavior through cointegration testing
 
 # Data Source
-* [Kaggle: Google Stock Data (GOOGL)]([https://www.kaggle.com](https://www.kaggle.com/datasets/varpit94/google-stock-data))
+* [Kaggle: Google Stock Data (GOOGL)](https://www.kaggle.com/datasets/varpit94/google-stock-data)
 * [Kaggle: Meta Stock Data (META)](https://www.kaggle.com/datasets/umerhaddii/meta-stock-data-2025)
